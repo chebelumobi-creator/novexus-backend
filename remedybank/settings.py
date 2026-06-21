@@ -150,13 +150,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # ✅ UPDATED - Brevo SMTP Email Settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp-relay.brevo.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ac89ad001@smtp-brevo.com'
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = 'Remedy Bank <ac89ad001@smtp-brevo.com>'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp-relay.brevo.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'ac89ad001@smtp-brevo.com'
+# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+# DEFAULT_FROM_EMAIL = 'Remedy Bank <ac89ad001@smtp-brevo.com>'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # Custom user model
 AUTH_USER_MODEL = 'core.User'
 

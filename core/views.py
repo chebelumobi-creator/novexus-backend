@@ -308,22 +308,23 @@ def domestic_transfer(request):
     user_settings = UserSecuritySettings.objects.get(user=request.user)
     manual_verification_required = user_settings.manual_verification_enabled
     
-    send_mail(
-        subject='Domestic Transfer Successful - Novexus Finance Bank',
-        message=f'Dear {result["user"].username},\n\nYour domestic transfer of ${result["amount"]} to {result["data"].get("recipient_name")} ({result["data"].get("recipient_bank")}) was successful.\n\nReference: {result["reference"]}\n\nThank you for banking with Novexus Finance Bank.',
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[result["user"].email],
-        fail_silently=True,
-    )
+    # EMAIL DISABLED - Commented out to avoid SMTP errors on Render
+    # send_mail(
+    #     subject='Domestic Transfer Successful - Novexus Finance Bank',
+    #     message=f'Dear {result["user"].username},\n\nYour domestic transfer of ${result["amount"]} to {result["data"].get("recipient_name")} ({result["data"].get("recipient_bank")}) was successful.\n\nReference: {result["reference"]}\n\nThank you for banking with Novexus Finance Bank.',
+    #     from_email=settings.DEFAULT_FROM_EMAIL,
+    #     recipient_list=[result["user"].email],
+    #     fail_silently=True,
+    # )
     
-    if result["data"].get('recipient_email'):
-        send_mail(
-            subject='You have received money - Novexus Finance Bank',
-            message=f'Dear {result["data"].get("recipient_name")},\n\nYou have received ${result["amount"]} from {result["user"].username} via Novexus Finance Bank.\n\nReference: {result["reference"]}\n\nThank you.',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[result["data"].get('recipient_email')],
-            fail_silently=True,
-        )
+    # if result["data"].get('recipient_email'):
+    #     send_mail(
+    #         subject='You have received money - Novexus Finance Bank',
+    #         message=f'Dear {result["data"].get("recipient_name")},\n\nYou have received ${result["amount"]} from {result["user"].username} via Novexus Finance Bank.\n\nReference: {result["reference"]}\n\nThank you.',
+    #         from_email=settings.DEFAULT_FROM_EMAIL,
+    #         recipient_list=[result["data"].get('recipient_email')],
+    #         fail_silently=True,
+    #     )
     
     serializer = TransactionSerializer(result["transaction"])
     
@@ -382,22 +383,23 @@ def wire_transfer(request):
         transaction.currency_symbol = currency_symbol
         transaction.save()
     
-    send_mail(
-        subject='Wire Transfer Successful - Novexus Finance Bank',
-        message=f'Dear {result["user"].username},\n\nYour international wire transfer of ${result["amount"]} to {result["data"].get("recipient_name")} ({result["data"].get("recipient_bank")}, {result["data"].get("country")}) was successful.\n\nSWIFT Code: {result["data"].get("swift_code")}\nReference: {result["reference"]}\n\nThank you for banking with Novexus Finance Bank.',
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[result["user"].email],
-        fail_silently=True,
-    )
+    # EMAIL DISABLED - Commented out to avoid SMTP errors on Render
+    # send_mail(
+    #     subject='Wire Transfer Successful - Novexus Finance Bank',
+    #     message=f'Dear {result["user"].username},\n\nYour international wire transfer of ${result["amount"]} to {result["data"].get("recipient_name")} ({result["data"].get("recipient_bank")}, {result["data"].get("country")}) was successful.\n\nSWIFT Code: {result["data"].get("swift_code")}\nReference: {result["reference"]}\n\nThank you for banking with Novexus Finance Bank.',
+    #     from_email=settings.DEFAULT_FROM_EMAIL,
+    #     recipient_list=[result["user"].email],
+    #     fail_silently=True,
+    # )
     
-    if result["data"].get('recipient_email'):
-        send_mail(
-            subject='You have received an international wire transfer - Novexus Finance Bank',
-            message=f'Dear {result["data"].get("recipient_name")},\n\nYou have received ${result["amount"]} from {result["user"].username} via Novexus Finance Bank International Wire Transfer.\n\nReference: {result["reference"]}\n\nThank you.',
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[result["data"].get('recipient_email')],
-            fail_silently=True,
-        )
+    # if result["data"].get('recipient_email'):
+    #     send_mail(
+    #         subject='You have received an international wire transfer - Novexus Finance Bank',
+    #         message=f'Dear {result["data"].get("recipient_name")},\n\nYou have received ${result["amount"]} from {result["user"].username} via Novexus Finance Bank International Wire Transfer.\n\nReference: {result["reference"]}\n\nThank you.',
+    #         from_email=settings.DEFAULT_FROM_EMAIL,
+    #         recipient_list=[result["data"].get('recipient_email')],
+    #         fail_silently=True,
+    #     )
     
     serializer = TransactionSerializer(result["transaction"])
     
