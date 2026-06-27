@@ -165,3 +165,11 @@ AUTH_USER_MODEL = 'core.User'
 
 # Email - Console backend for now (emails print to logs)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+# ===== CSRF FIX FOR RAILWAY =====
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_DOMAIN = '.up.railway.app'
+SESSION_COOKIE_DOMAIN = '.up.railway.app'
