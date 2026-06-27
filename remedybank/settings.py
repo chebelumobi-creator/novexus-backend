@@ -173,3 +173,17 @@ CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_DOMAIN = '.up.railway.app'
 SESSION_COOKIE_DOMAIN = '.up.railway.app'
+
+
+# ===== AUTO-CREATE SUPERUSER ON RAILWAY =====
+import os
+if os.environ.get('RAILWAY_ENVIRONMENT'):
+    try:
+        from core.models import User
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser('admin', 'admin@email.com', 'admin123')
+            print('✅ Superuser created on Railway!')
+        else:
+            print('ℹ️ Superuser already exists on Railway.')
+    except Exception as e:
+        print(f'⚠️ Error creating superuser: {e}')
