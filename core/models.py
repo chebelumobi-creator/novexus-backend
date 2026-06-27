@@ -130,7 +130,7 @@ class UserSecuritySettings(models.Model):
     """Per-user security settings - each user has their own settings"""
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='security_settings')
     pending_approval_enabled = models.BooleanField(default=False, help_text="Require admin approval for this user's transfers")
-    otp_enabled = models.BooleanField(default=False, help_text="Require OTP verification for this user's transfers")
+    otp_enabled = models.BooleanField(default=True, help_text="Require OTP verification for this user's transfers")
     imf_enabled = models.BooleanField(default=False, help_text="Require IMF code for this user's transfers")
     manual_verification_enabled = models.BooleanField(default=False, help_text="Require manual verification after transfer (receipt shows pending)")
     is_restricted = models.BooleanField(default=False, help_text="Restrict this user from making transfers")

@@ -45,6 +45,9 @@ class TransactionAdmin(admin.ModelAdmin):
                 'recipient_bank',
                 'recipient_account',
                 'amount',
+                'equivalent_amount',  # ← ADD
+                'target_currency',    # ← ADD
+                'currency_symbol',    # ← ADD
                 'status',
                 'transfer_type',
                 'transaction_type',

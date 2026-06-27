@@ -174,21 +174,22 @@
 #         description=data.get('description', ''),
 #     )
 
-#     send_mail(
-#         subject='Transfer Successful - Novexus Finance Bank',
-#         message=f'Dear {user.username},\n\nYour transfer of ${amount} to {data.get("recipient_name")} ({data.get("recipient_bank")}) was successful.\n\nReference: {reference}\n\nThank you for banking with Novexus Finance Bank.',
-#         from_email=settings.DEFAULT_FROM_EMAIL,
-#         recipient_list=[user.email],
-#         fail_silently=True,
-#     )
+#     # EMAIL DISABLED - Commented out to avoid SMTP errors on Render
+#     # send_mail(
+#     #     subject='Transfer Successful - Novexus Finance Bank',
+#     #     message=f'Dear {user.username},\n\nYour transfer of ${amount} to {data.get("recipient_name")} ({data.get("recipient_bank")}) was successful.\n\nReference: {reference}\n\nThank you for banking with Novexus Finance Bank.',
+#     #     from_email=settings.DEFAULT_FROM_EMAIL,
+#     #     recipient_list=[user.email],
+#     #     fail_silently=True,
+#     # )
 
-#     send_mail(
-#         subject='You have received money - Novexus Finance Bank',
-#         message=f'Dear {data.get("recipient_name")},\n\nYou have received ${amount} from {user.username} via Novexus Finance Bank.\n\nReference: {reference}\n\nThank you.',
-#         from_email=settings.DEFAULT_FROM_EMAIL,
-#         recipient_list=[data.get('recipient_email')],
-#         fail_silently=True,
-#     )
+#     # send_mail(
+#     #     subject='You have received money - Novexus Finance Bank',
+#     #     message=f'Dear {data.get("recipient_name")},\n\nYou have received ${amount} from {user.username} via Novexus Finance Bank.\n\nReference: {reference}\n\nThank you.',
+#     #     from_email=settings.DEFAULT_FROM_EMAIL,
+#     #     recipient_list=[data.get('recipient_email')],
+#     #     fail_silently=True,
+#     # )
 
 #     serializer = TransactionSerializer(transaction)
 #     return Response({'message': 'Transfer successful', 'transaction': serializer.data}, status=status.HTTP_200_OK)
@@ -304,6 +305,27 @@
 #     if not isinstance(result, dict) or 'completed' not in result:
 #         return result
     
+#     # Get user settings for manual verification
+#     user_settings = UserSecuritySettings.objects.get(user=request.user)
+#     manual_verification_required = user_settings.manual_verification_enabled
+    
+#     # EMAIL DISABLED - Commented out to avoid SMTP errors on Render
+#     # send_mail(
+#     #     subject='Domestic Transfer Successful - Novexus Finance Bank',
+#     #     message=f'Dear {result["user"].username},\n\nYour domestic transfer of ${result["amount"]} to {result["data"].get("recipient_name")} ({result["data"].get("recipient_bank")}) was successful.\n\nReference: {result["reference"]}\n\nThank you for banking with Novexus Finance Bank.',
+#     #     from_email=settings.DEFAULT_FROM_EMAIL,
+#     #     recipient_list=[result["user"].email],
+#     #     fail_silently=True,
+#     # )
+    
+#     # if result["data"].get('recipient_email'):
+#     #     send_mail(
+#     #         subject='You have received money - Novexus Finance Bank',
+#     #         message=f'Dear {result["data"].get("recipient_name")},\n\nYou have received ${result["amount"]} from {result["user"].username} via Novexus Finance Bank.\n\nReference: {result["reference"]}\n\nThank you.',
+#     #         from_email=settings.DEFAULT_FROM_EMAIL,
+#     #         recipient_list=[result["data"].get('recipient_email')],
+#     #         fail_silently=True,
+#     #     )
     
 #     serializer = TransactionSerializer(result["transaction"])
     
@@ -361,7 +383,25 @@
 #         transaction.target_currency = target_currency
 #         transaction.currency_symbol = currency_symbol
 #         transaction.save()
- 
+    
+#     # EMAIL DISABLED - Commented out to avoid SMTP errors on Render
+#     # send_mail(
+#     #     subject='Wire Transfer Successful - Novexus Finance Bank',
+#     #     message=f'Dear {result["user"].username},\n\nYour international wire transfer of ${result["amount"]} to {result["data"].get("recipient_name")} ({result["data"].get("recipient_bank")}, {result["data"].get("country")}) was successful.\n\nSWIFT Code: {result["data"].get("swift_code")}\nReference: {result["reference"]}\n\nThank you for banking with Novexus Finance Bank.',
+#     #     from_email=settings.DEFAULT_FROM_EMAIL,
+#     #     recipient_list=[result["user"].email],
+#     #     fail_silently=True,
+#     # )
+    
+#     # if result["data"].get('recipient_email'):
+#     #     send_mail(
+#     #         subject='You have received an international wire transfer - Novexus Finance Bank',
+#     #         message=f'Dear {result["data"].get("recipient_name")},\n\nYou have received ${result["amount"]} from {result["user"].username} via Novexus Finance Bank International Wire Transfer.\n\nReference: {result["reference"]}\n\nThank you.',
+#     #         from_email=settings.DEFAULT_FROM_EMAIL,
+#     #         recipient_list=[result["data"].get('recipient_email')],
+#     #         fail_silently=True,
+#     #     )
+    
 #     serializer = TransactionSerializer(result["transaction"])
     
 #     response_data = {
@@ -387,15 +427,23 @@
 #     user_code = data.get('otp_code')
 #     transaction_id = data.get('transaction_id')
     
+#     # DEBUG - Print received values
+#     print(f"DEBUG: otp_id={otp_id}, user_code={user_code}, transaction_id={transaction_id}")
+    
 #     try:
 #         otp = OTP.objects.get(id=otp_id, user=user, is_used=False)
+#         print(f"DEBUG: Found OTP with code: {otp.code}")
         
 #         if otp.is_expired():
+#             print("DEBUG: OTP is expired")
 #             return Response({'error': 'OTP expired. Please request again.'}, status=status.HTTP_400_BAD_REQUEST)
         
-#         if otp.code != user_code:
+#         # ✅ FIX: Convert both to strings before comparing
+#         if str(otp.code) != str(user_code):
+#             print(f"DEBUG: OTP codes do NOT match: {otp.code} vs {user_code}")
 #             return Response({'error': 'Invalid OTP code'}, status=status.HTTP_400_BAD_REQUEST)
         
+#         print("DEBUG: OTP codes match! ✅")
 #         otp.is_used = True
 #         otp.save()
         
@@ -409,22 +457,35 @@
 #             transaction.status = 'completed'
 #             transaction.save()
             
-#             if transaction.transfer_type == 'wire':
-#                 send_mail(
-#                     subject='Wire Transfer Successful - Novexus Finance Bank',
-#                     message=f'Dear {user.username},\n\nYour wire transfer of ${amount} to {transaction.recipient_name} ({transaction.recipient_bank}) was successful.\n\nReference: {transaction.reference}\n\nThank you for banking with Novexus Finance Bank.',
-#                     from_email=settings.DEFAULT_FROM_EMAIL,
-#                     recipient_list=[user.email],
-#                     fail_silently=True,
-#                 )
-#             else:
-#                 send_mail(
-#                     subject='Domestic Transfer Successful - Novexus Finance Bank',
-#                     message=f'Dear {user.username},\n\nYour domestic transfer of ${amount} to {transaction.recipient_name} ({transaction.recipient_bank}) was successful.\n\nReference: {transaction.reference}\n\nThank you for banking with Novexus Finance Bank.',
-#                     from_email=settings.DEFAULT_FROM_EMAIL,
-#                     recipient_list=[user.email],
-#                     fail_silently=True,
-#                 )
+#             # ===== ADD CURRENCY CONVERSION AFTER COMPLETION =====
+#             if transaction.transfer_type == 'wire' and transaction.country:
+#                 target_currency = get_currency_code(transaction.country)
+#                 if target_currency:
+#                     converted = convert_currency(float(transaction.amount), 'USD', target_currency)
+#                     if converted:
+#                         transaction.equivalent_amount = round(converted, 2)
+#                         transaction.target_currency = target_currency
+#                         transaction.currency_symbol = get_currency_symbol(target_currency)
+#                         transaction.save()
+#                         print(f"DEBUG: Equivalent amount saved: {transaction.equivalent_amount} {transaction.target_currency}")
+            
+#             # EMAIL DISABLED - Commented out to avoid SMTP errors on Render
+#             # if transaction.transfer_type == 'wire':
+#             #     send_mail(
+#             #         subject='Wire Transfer Successful - Novexus Finance Bank',
+#             #         message=f'Dear {user.username},\n\nYour wire transfer of ${amount} to {transaction.recipient_name} ({transaction.recipient_bank}) was successful.\n\nReference: {transaction.reference}\n\nThank you for banking with Novexus Finance Bank.',
+#             #         from_email=settings.DEFAULT_FROM_EMAIL,
+#             #         recipient_list=[user.email],
+#             #         fail_silently=True,
+#             #     )
+#             # else:
+#             #     send_mail(
+#             #         subject='Domestic Transfer Successful - Novexus Finance Bank',
+#             #         message=f'Dear {user.username},\n\nYour domestic transfer of ${amount} to {transaction.recipient_name} ({transaction.recipient_bank}) was successful.\n\nReference: {transaction.reference}\n\nThank you for banking with Novexus Finance Bank.',
+#             #         from_email=settings.DEFAULT_FROM_EMAIL,
+#             #         recipient_list=[user.email],
+#             #         fail_silently=True,
+#             #     )
             
 #             serializer = TransactionSerializer(transaction)
 #             return Response({'message': 'Transfer completed', 'transaction': serializer.data})
@@ -575,13 +636,14 @@
 #         transaction.status = 'completed'
 #         transaction.save()
         
-#         send_mail(
-#             subject='Transfer Approved - Novexus Finance Bank',
-#             message=f'Dear {user.username},\n\nYour transfer of ${amount} has been approved by admin.\n\nReference: {transaction.reference}\n\nThank you for banking with Novexus Finance Bank.',
-#             from_email=settings.DEFAULT_FROM_EMAIL,
-#             recipient_list=[user.email],
-#             fail_silently=True,
-#         )
+#         # EMAIL DISABLED - Commented out to avoid SMTP errors on Render
+#         # send_mail(
+#         #     subject='Transfer Approved - Novexus Finance Bank',
+#         #     message=f'Dear {user.username},\n\nYour transfer of ${amount} has been approved by admin.\n\nReference: {transaction.reference}\n\nThank you for banking with Novexus Finance Bank.',
+#         #     from_email=settings.DEFAULT_FROM_EMAIL,
+#         #     recipient_list=[user.email],
+#         #     fail_silently=True,
+#         # )
         
 #         return Response({'message': 'Transaction approved'})
         
@@ -601,13 +663,14 @@
 #         transaction.status = 'failed'
 #         transaction.save()
         
-#         send_mail(
-#             subject='Transfer Rejected - Novexus Finance Bank',
-#             message=f'Dear {transaction.sender.username},\n\nYour transfer of ${transaction.amount} has been rejected by admin.\n\nReference: {transaction.reference}\n\nPlease contact support for more information.',
-#             from_email=settings.DEFAULT_FROM_EMAIL,
-#             recipient_list=[transaction.sender.email],
-#             fail_silently=True,
-#         )
+#         # EMAIL DISABLED - Commented out to avoid SMTP errors on Render
+#         # send_mail(
+#         #     subject='Transfer Rejected - Novexus Finance Bank',
+#         #     message=f'Dear {transaction.sender.username},\n\nYour transfer of ${transaction.amount} has been rejected by admin.\n\nReference: {transaction.reference}\n\nPlease contact support for more information.',
+#         #     from_email=settings.DEFAULT_FROM_EMAIL,
+#         #     recipient_list=[transaction.sender.email],
+#         #     fail_silently=True,
+#         # )
         
 #         return Response({'message': 'Transaction rejected'})
         
@@ -691,6 +754,8 @@
         
 #     except User.DoesNotExist:
 #         return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 
 
 
@@ -1153,6 +1218,18 @@ def verify_otp(request):
             transaction.status = 'completed'
             transaction.save()
             
+            # ===== ADD CURRENCY CONVERSION AFTER COMPLETION =====
+            if transaction.transfer_type == 'wire' and transaction.country:
+                target_currency = get_currency_code(transaction.country)
+                if target_currency:
+                    converted = convert_currency(float(transaction.amount), 'USD', target_currency)
+                    if converted:
+                        transaction.equivalent_amount = round(converted, 2)
+                        transaction.target_currency = target_currency
+                        transaction.currency_symbol = get_currency_symbol(target_currency)
+                        transaction.save()
+                        print(f"DEBUG: Equivalent amount saved: {transaction.equivalent_amount} {transaction.target_currency}")
+            
             # EMAIL DISABLED - Commented out to avoid SMTP errors on Render
             # if transaction.transfer_type == 'wire':
             #     send_mail(
@@ -1172,7 +1249,17 @@ def verify_otp(request):
             #     )
             
             serializer = TransactionSerializer(transaction)
-            return Response({'message': 'Transfer completed', 'transaction': serializer.data})
+            
+            # ===== INCLUDE EQUIVALENT AMOUNT IN RESPONSE =====
+            response_data = {
+                'message': 'Transfer completed',
+                'transaction': serializer.data,
+                'equivalent_amount': transaction.equivalent_amount,
+                'target_currency': transaction.target_currency,
+                'currency_symbol': transaction.currency_symbol,
+                'manual_verification_required': False
+            }
+            return Response(response_data)
             
         except Transaction.DoesNotExist:
             return Response({'error': 'Transaction not found'}, status=status.HTTP_404_NOT_FOUND)
