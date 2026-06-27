@@ -26,14 +26,10 @@ SECRET_KEY = 'django-insecure-jd*3jg@5&__fx+g-h53_@roeq@*dft(@c%c*w0c5c$w37$q+n6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    'web-production-39640.up.railway.app',
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://web-production-39640.up.railway.app',
+    'https://novexus-backend.onrender.com',
     'http://localhost:5173',
 ]
 
@@ -87,7 +83,7 @@ WSGI_APPLICATION = 'remedybank.wsgi.application'
 
 
 # ===== DATABASE =====
-# Railway will provide DATABASE_URL automatically
+# Render will provide DATABASE_URL via environment variable
 # For local development, falls back to SQLite
 
 DATABASES = {
@@ -165,25 +161,3 @@ AUTH_USER_MODEL = 'core.User'
 
 # Email - Console backend for now (emails print to logs)
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
-# ===== CSRF FIX FOR RAILWAY =====
-CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_HTTPONLY = False
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_DOMAIN = '.up.railway.app'
-SESSION_COOKIE_DOMAIN = '.up.railway.app'
-
-
-# ===== AUTO-CREATE SUPERUSER ON RAILWAY =====
-import os
-if os.environ.get('RAILWAY_ENVIRONMENT'):
-    try:
-        from core.models import User
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser('admin', 'admin@email.com', 'admin123')
-            print('✅ Superuser created on Railway!')
-        else:
-            print('ℹ️ Superuser already exists on Railway.')
-    except Exception as e:
-        print(f'⚠️ Error creating superuser: {e}')
