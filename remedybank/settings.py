@@ -83,11 +83,15 @@ WSGI_APPLICATION = 'remedybank.wsgi.application'
 
 
 # ===== DATABASE =====
-# Render will provide DATABASE_URL via environment variable
+# Supabase PostgreSQL (via DATABASE_URL environment variable)
 # For local development, falls back to SQLite
 
 DATABASES = {
-    'default': dj_database_url.config(default='sqlite:///db.sqlite3')
+    'default': dj_database_url.config(
+        default='sqlite:///db.sqlite3',
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 
