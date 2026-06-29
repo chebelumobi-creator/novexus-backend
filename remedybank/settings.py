@@ -149,6 +149,7 @@ AWS_S3_ADDRESSING_STYLE = 'path'
 AWS_DEFAULT_ACL = 'public-read'
 AWS_QUERYSTRING_AUTH = False
 # DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+AWS_S3_CUSTOM_DOMAIN = "ezcdgymviuycgbklfbod.supabase.co/storage/v1/object/public/profile-pics"
 
 # # Static file storage for production
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
